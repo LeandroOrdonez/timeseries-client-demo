@@ -3,7 +3,7 @@ let datafetcher = new TimeSeriesClientSide.DataFetcher();
 
 // TODO: fix these atrocious functions
 function toISO(date) {
-    return date + '00.000Z';
+    return date + ':00.000Z';
 }
 
 
@@ -43,7 +43,7 @@ function getMetric(metricUrl) {
 
 // set the dimensions and margins of the graph
 var margin = {top: 20, right: 20, bottom: 30, left: 50},
-    width = 960 - margin.left - margin.right,
+    width = 1400 - margin.left - margin.right,
     height = 500 - margin.top - margin.bottom;
 
 // parse the date / time
@@ -116,6 +116,7 @@ function updateChart(fragment) {
     const toDate = parseTime(toISO(document.getElementById('end').value));
     let selector = document.getElementById('metrics');
     let metric = selector[selector.selectedIndex].value;
+    console.log(datafetcher.getAllCurrentObservations());
     parseDates(datafetcher.getCurrentObservations(metric), new Date(fragment['startDate']), new Date(fragment['endDate']));
     buildChart(fromDate, toDate, metric);
 }
