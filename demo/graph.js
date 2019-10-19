@@ -1,6 +1,14 @@
 let datafetcher = new TimeSeriesClientSide.DataFetcher();
 
 
+// .toRad() fix
+// from: http://stackoverflow.com/q/5260423/1418878
+if (typeof(Number.prototype.toRad) === "undefined") {
+    Number.prototype.toRad = function() {
+        return this * Math.PI / 180;
+    }
+}
+
 // TODO: fix these atrocious functions
 function toISO(date) {
     return date + ':00.000Z';
@@ -38,7 +46,80 @@ function getMetric(metricUrl) {
     return splitUrl[splitUrl.length - 1].split(":")[0];
 }
 
+let map = L.map('mapid').setView([51.2604, 4.35694444], 14);
 
+L.tileLayer('https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token={accessToken}', {
+    attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors, <a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © <a href="https://www.mapbox.com/">Mapbox</a>',
+    minZoom: 14,
+    maxZoom: 14,
+    id: 'mapbox.streets',
+    accessToken: 'pk.eyJ1Ijoic2lndmV2ZXJtYW5kZXJlIiwiYSI6ImNrMXhsdXp1ZDBjdHQzb3F0Z2N4ejdhaGIifQ.kJ1Wvq2jGo4Yudvx3idFZg'
+}).addTo(map);
+
+var editableLayers = new L.FeatureGroup();
+map.addLayer(editableLayers);
+
+var options = {
+    position: 'topright',
+    draw: {
+        polyline: {
+            shapeOptions: {
+                color: '#f357a1',
+                weight: 10
+            }
+        },
+        polygon: {
+            allowIntersection: false, // Restricts shapes to simple polygons
+            drawError: {
+                color: '#e1e100', // Color the shape will turn when intersects
+                message: '<strong>Oh snap!<strong> you can\'t draw that!' // Message that will show when intersect
+            },
+            shapeOptions: {
+                color: '#bada55'
+            }
+        },
+        circle: false, // Turns off this drawing tool
+        rectangle: {
+            shapeOptions: {
+                clickable: false
+            }
+        },
+    },
+    edit: {
+        featureGroup: editableLayers, //REQUIRED!!
+        remove: false
+    }
+};
+
+var drawControl = new L.Control.Draw(options);
+map.addControl(drawControl);
+
+map.on(L.Draw.Event.CREATED, function (e) {
+    var type = e.layerType,
+        layer = e.layer;
+
+    if (type === 'marker') {
+        layer.bindPopup('A popup!');
+    }
+
+    if (type === 'rectangle') {
+        layer.on('mouseover', function() {
+            console.log(layer.getLatLngs());
+        });
+    }
+
+    editableLayers.addLayer(layer);
+});
+
+map.on('click', function(e) {
+    console.log(getTileURL(e.latlng.lat, e.latlng.lng, map.getZoom()));
+});
+
+function getTileURL(lat, lon, zoom) {
+    let xtile = parseInt(Math.floor( (lon + 180) / 360 * (1<<zoom) ));
+    let ytile = parseInt(Math.floor( (1 - Math.log(Math.tan(lat.toRad()) + 1 / Math.cos(lat.toRad())) / Math.PI) / 2 * (1<<zoom) ));
+    return "" + zoom + "/" + xtile + "/" + ytile;
+}
 
 
 // set the dimensions and margins of the graph
