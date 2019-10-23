@@ -1,6 +1,7 @@
 let datafetcher = new TimeSeriesClientSide.DataFetcher();
 
 
+
 // .toRad() fix
 // from: http://stackoverflow.com/q/5260423/1418878
 if (typeof(Number.prototype.toRad) === "undefined") {
@@ -75,7 +76,7 @@ var options = {
                 message: '<strong>Oh snap!<strong> you can\'t draw that!' // Message that will show when intersect
             },
             shapeOptions: {
-                color: '#bada55'
+                color: '#c50808'
             }
         },
         circle: false, // Turns off this drawing tool
@@ -102,9 +103,11 @@ map.on(L.Draw.Event.CREATED, function (e) {
         layer.bindPopup('A popup!');
     }
 
-    if (type === 'rectangle') {
+    if (type === 'polygon') {
         layer.on('mouseover', function() {
             console.log(layer.getLatLngs());
+            let polyUtils = new TimeSeriesClientSide.Utils(layer.getLatLngs()[0]);
+            console.log(polyUtils.calculateTilePolygon());
         });
     }
 
@@ -112,15 +115,17 @@ map.on(L.Draw.Event.CREATED, function (e) {
 });
 
 map.on('click', function(e) {
+    console.log(e.latlng);
+    console.log(Math.floor( (e.latlng.lng + 180) / 360 * Math.pow(2, 14)));
+    console.log(Math.floor( (e.latlng.lng + 180) / 360 * Math.pow(2, 14)));
     console.log(getTileURL(e.latlng.lat, e.latlng.lng, map.getZoom()));
 });
 
 function getTileURL(lat, lon, zoom) {
-    let xtile = parseInt(Math.floor( (lon + 180) / 360 * (1<<zoom) ));
-    let ytile = parseInt(Math.floor( (1 - Math.log(Math.tan(lat.toRad()) + 1 / Math.cos(lat.toRad())) / Math.PI) / 2 * (1<<zoom) ));
+    let xtile = parseInt(Math.floor( (lon + 180) / 360 * Math.pow(2, zoom) ));
+    let ytile = parseInt(Math.floor( (1 - Math.log(Math.tan(lat.toRad()) + 1 / Math.cos(lat.toRad())) / Math.PI) / 2 * Math.pow(2, zoom) ));
     return "" + zoom + "/" + xtile + "/" + ytile;
 }
-
 
 // set the dimensions and margins of the graph
 var margin = {top: 20, right: 20, bottom: 30, left: 50},
