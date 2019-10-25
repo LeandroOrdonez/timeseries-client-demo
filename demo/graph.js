@@ -22,12 +22,13 @@ function toCorrectTimezone(date) {
 }
 
 
+let polygon;
 function getAirQualityData() {
     const fromDate = toISO(document.getElementById('start').value);
     const toDate = toISO(document.getElementById('end').value);
     console.log(fromDate);
     datafetcher.addFragmentListener(updateChart);
-    datafetcher.getObservations(fromDate, toDate);
+    datafetcher.getPolygonObservations(polygon, fromDate, toDate);
 }
 
 
@@ -92,8 +93,9 @@ var options = {
     }
 };
 
-var drawControl = new L.Control.Draw(options);
+let drawControl = new L.Control.Draw(options);
 map.addControl(drawControl);
+
 
 map.on(L.Draw.Event.CREATED, function (e) {
     var type = e.layerType,
@@ -104,10 +106,9 @@ map.on(L.Draw.Event.CREATED, function (e) {
     }
 
     if (type === 'polygon') {
+        polygon = layer.getLatLngs()[0];
         layer.on('mouseover', function() {
             console.log(layer.getLatLngs());
-            let polyUtils = new TimeSeriesClientSide.Utils(layer.getLatLngs()[0]);
-            console.log(polyUtils.calculateTilePolygon());
         });
     }
 
