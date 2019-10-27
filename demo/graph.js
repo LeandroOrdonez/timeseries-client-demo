@@ -203,7 +203,7 @@ function updateChart(fragment) {
     const toDate = parseTime(toISO(document.getElementById('end').value));
     let selector = document.getElementById('metrics');
     let metric = selector[selector.selectedIndex].value;
-    console.log(datafetcher.getAllCurrentObservations());
+    //console.log(datafetcher.getAllCurrentObservations());
     parseDates(datafetcher.getCurrentObservations(metric), new Date(fragment['startDate']), new Date(fragment['endDate']));
     buildChart(fromDate, toDate, metric);
 }
