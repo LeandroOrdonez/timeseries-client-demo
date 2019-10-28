@@ -107,9 +107,6 @@ map.on(L.Draw.Event.CREATED, function (e) {
 
     if (type === 'polygon') {
         polygon = layer.getLatLngs()[0];
-        layer.on('mouseover', function() {
-            console.log(layer.getLatLngs());
-        });
     }
 
     editableLayers.addLayer(layer);
