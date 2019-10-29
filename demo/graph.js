@@ -48,7 +48,7 @@ function getMetric(metricUrl) {
     return splitUrl[splitUrl.length - 1].split(":")[0];
 }
 
-let map = L.map('mapid').setView([51.2604, 4.35694444], 14);
+let map = L.map('mapid').setView([51.24058722714804, 4.406719207763673], 14);
 
 L.tileLayer('https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token={accessToken}', {
     attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors, <a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © <a href="https://www.mapbox.com/">Mapbox</a>',
@@ -200,7 +200,9 @@ function updateChart(fragment) {
     const toDate = parseTime(toISO(document.getElementById('end').value));
     let selector = document.getElementById('metrics');
     let metric = selector[selector.selectedIndex].value;
-    //console.log(datafetcher.getAllCurrentObservations());
+    if (typeof datafetcher.getCurrentObservations(metric) === "undefined") {
+        return;
+    }
     parseDates(datafetcher.getCurrentObservations(metric), new Date(fragment['startDate']), new Date(fragment['endDate']));
     buildChart(fromDate, toDate, metric);
 }
