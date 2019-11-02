@@ -28,10 +28,26 @@
 <body>
 
 
-<input type="datetime-local" id="start" value="2019-10-05T01:00">
-<input type="datetime-local" id="end" value="2019-10-06T01:00">
-<select onchange="buildChart()" id="metrics">
+<input type="datetime-local" id="start" value="2019-10-20T01:00">
+<input type="datetime-local" id="end" value="2019-10-21T01:00">
+<select id="metrics">
     <option value="http://example.org/data/airquality.no2::number">no2</option>
+    <option value="http://example.org/data/airquality.o3::number">o3</option>
+    <option value="http://example.org/data/airquality.pm10::number">pm10</option>
+    <option value="http://example.org/data/airquality.pm25::number">pm25</option>
+</select>
+<select id="aggrMethod">
+    <option value="none">None</option>
+    <option value="median">Median</option>
+    <option value="average">Average</option>
+</select>
+<select id="aggrPeriod">
+    <option value="none">None</option>
+    <option value="min">5 Minutes</option>
+    <option value="hour">Hour</option>
+    <option value="day">Day</option>
+    <option value="month">Month</option>
+    <option value="year">Year</option>
 </select>
 <button type="button" onclick="getAirQualityData()">Get Data!</button>
 <div id="mapid"></div>

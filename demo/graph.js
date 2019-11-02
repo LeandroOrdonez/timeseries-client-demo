@@ -26,9 +26,17 @@ let polygon;
 function getAirQualityData() {
     const fromDate = toISO(document.getElementById('start').value);
     const toDate = toISO(document.getElementById('end').value);
-    console.log(fromDate);
+    const aggrMethod = document.getElementById('aggrMethod').value;
+    const aggrPeriod = document.getElementById('aggrPeriod').value;
+    const args = [polygon, fromDate, toDate];
+    if (aggrMethod !== "none") {
+        args.push(aggrMethod);
+    }
+    if (aggrPeriod !== "none") {
+        args.push(aggrPeriod);
+    }
     datafetcher.addFragmentListener(updateChart);
-    datafetcher.getPolygonObservations(polygon, fromDate, toDate);
+    datafetcher.getPolygonObservations(...args);
 }
 
 
