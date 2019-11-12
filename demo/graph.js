@@ -10,24 +10,30 @@ if (typeof(Number.prototype.toRad) === "undefined") {
     }
 }
 
-// TODO: fix these atrocious functions
+// TODO: fix this atrocious function
 function toISO(date) {
     return date + ':00.000Z';
 }
 
-
-function toCorrectTimezone(date) {
-    date.setHours(date.getHours() - 2);
-    return date;
-}
-
-
 let polygon;
+let currAggrMethod;
+let currAggrPeriod;
 function getAirQualityData() {
-    const fromDate = toISO(document.getElementById('start').value);
-    const toDate = toISO(document.getElementById('end').value);
+    let fromDate = toISO(document.getElementById('start').value);
+    let toDate = toISO(document.getElementById('end').value);
+    let selector = document.getElementById('metrics');
+    let metric = selector[selector.selectedIndex].value;
     const aggrMethod = document.getElementById('aggrMethod').value;
     const aggrPeriod = document.getElementById('aggrPeriod').value;
+    if (datafetcher.containsInterval(metric, fromDate, toDate) &&
+        aggrMethod === currAggrMethod && aggrPeriod === currAggrPeriod) {
+        fromDate = new Date( fromDate);
+        toDate = new Date(toDate);
+        parseDates(datafetcher.getCurrentObservations(metric), fromDate, toDate);
+        buildChart(fromDate, toDate, metric);
+        return;
+    }
+
     const args = [polygon, fromDate, toDate];
     if (aggrMethod !== "none") {
         args.push(aggrMethod);
@@ -35,20 +41,11 @@ function getAirQualityData() {
     if (aggrPeriod !== "none") {
         args.push(aggrPeriod);
     }
+    currAggrMethod = aggrMethod;
+    currAggrPeriod = aggrPeriod;
     datafetcher.addFragmentListener(updateChart);
+    console.log(args);
     datafetcher.getPolygonObservations(...args);
-}
-
-
-function populatePicker() {
-    let select = document.getElementById("metrics");
-    for (let key in datafetcher.observations) {
-        console.log(key);
-        let opt = document.createElement('option');
-        opt.value = key;
-        opt.innerHTML = getMetric(key);
-        select.appendChild(opt);
-    }
 }
 
 function getMetric(metricUrl) {
@@ -121,9 +118,6 @@ map.on(L.Draw.Event.CREATED, function (e) {
 });
 
 map.on('click', function(e) {
-    console.log(e.latlng);
-    console.log(Math.floor( (e.latlng.lng + 180) / 360 * Math.pow(2, 14)));
-    console.log(Math.floor( (e.latlng.lng + 180) / 360 * Math.pow(2, 14)));
     console.log(getTileURL(e.latlng.lat, e.latlng.lng, map.getZoom()));
 });
 
@@ -135,8 +129,8 @@ function getTileURL(lat, lon, zoom) {
 
 // set the dimensions and margins of the graph
 var margin = {top: 20, right: 20, bottom: 30, left: 50},
-    width = 1400 - margin.left - margin.right,
-    height = 500 - margin.top - margin.bottom;
+    width = screen.width - margin.left - margin.right,
+    height = 350 - margin.top - margin.bottom;
 
 // parse the date / time
 var parseTime = d3.timeParse('%Y-%m-%dT%H:%M:%S.%LZ');
@@ -186,15 +180,11 @@ svg.append("path")
 
 
 function parseDates(data, fromDate, toDate) {
-    //console.log(fromDate);
-    //console.log(toDate);
     data.forEach(function (d) {
         if (d.resultTime[d.resultTime.length - 1] === 'Z') {
             let resultDate = new Date(d.resultTime);
-            //console.log(resultDate);
             if (resultDate <= toDate && resultDate >= fromDate) {
                 d.resultTime = parseTime(d.resultTime);
-                //console.log(resultDate);
             }
         }
     });
@@ -203,7 +193,6 @@ function parseDates(data, fromDate, toDate) {
 }
 
 function updateChart(fragment) {
-    console.log("start in html: " + toISO(document.getElementById('start').value));
     const fromDate = parseTime(toISO(document.getElementById('start').value));
     const toDate = parseTime(toISO(document.getElementById('end').value));
     let selector = document.getElementById('metrics');
@@ -218,15 +207,12 @@ function updateChart(fragment) {
 function buildChart(fromDate, toDate, metric) {
     let data = datafetcher.getCurrentObservations(metric);
     console.log(data);
-    //data.forEach( d => console.log(d.resultTime));
-    // Scale the range of the data
 
     x.domain(d3.extent([fromDate, toDate]));
     y.domain([d3.min(data, d => d.hasSimpleResult),
         d3.max(data, function (d) {
             return d.hasSimpleResult;
         })]);
-
     var svg = d3.select("body").transition();
 
     // Make the changes
