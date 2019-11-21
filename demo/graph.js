@@ -182,8 +182,13 @@ svg.append("path")
 function parseDates(data, fromDate, toDate) {
     data.forEach(function (d) {
         if (d.resultTime[d.resultTime.length - 1] === 'Z') {
+            console.log("[LOG] graphside fromDate: " + fromDate);
+            console.log("[LOG] resulttime: " + new Date(d.resultTime));
+            console.log("[LOG] graphside toDate: " + toDate);
             let resultDate = new Date(d.resultTime);
+            //resultDate = resultDate.setHours(resultDate.getHours() - 1);
             if (resultDate <= toDate && resultDate >= fromDate) {
+                console.log("conversion");
                 d.resultTime = parseTime(d.resultTime);
             }
         }
