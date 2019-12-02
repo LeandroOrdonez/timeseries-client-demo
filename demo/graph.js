@@ -1,5 +1,5 @@
 let datafetcher = new TimeSeriesClientSide.DataFetcher();
-
+let serverside = true;
 
 
 // .toRad() fix
@@ -34,13 +34,22 @@ function getAirQualityData() {
         return;
     }
 
-    const args = [polygon, fromDate, toDate];
+    const side = document.getElementById('aggregate_side').value;
+    serverside = side === "serverside";
+
+
+    let args = [];
     if (aggrMethod !== "none") {
         args.push(aggrMethod);
     }
     if (aggrPeriod !== "none") {
         args.push(aggrPeriod);
+        if (! serverside) {
+            fromDate = datafetcher.dateOffsetCorrection(fromDate, true, aggrPeriod);
+            toDate = datafetcher.dateOffsetCorrection(toDate, false, aggrPeriod);
+        }
     }
+    args = [polygon, fromDate, toDate].concat(args);
     currAggrMethod = aggrMethod;
     currAggrPeriod = aggrPeriod;
     datafetcher.addFragmentListener(updateChart);
@@ -180,17 +189,18 @@ svg.append("path")
 
 
 function parseDates(data, fromDate, toDate) {
+    console.log(data);
     data.forEach(function (d) {
         if (d.resultTime[d.resultTime.length - 1] === 'Z') {
-            console.log("[LOG] graphside fromDate: " + fromDate);
-            console.log("[LOG] resulttime: " + new Date(d.resultTime));
-            console.log("[LOG] graphside toDate: " + toDate);
+            // console.log("[LOG] graphside fromDate: " + fromDate);
+            // console.log("[LOG] resulttime: " + new Date(d.resultTime));
+            // console.log("[LOG] graphside toDate: " + toDate);
             let resultDate = new Date(d.resultTime);
             //resultDate = resultDate.setHours(resultDate.getHours() - 1);
-            if (resultDate <= toDate && resultDate >= fromDate) {
-                console.log("conversion");
-                d.resultTime = parseTime(d.resultTime);
-            }
+
+            console.log("conversion");
+            d.resultTime = parseTime(d.resultTime);
+
         }
     });
 
@@ -205,12 +215,17 @@ function updateChart(fragment) {
     if (typeof datafetcher.getCurrentObservations(metric) === "undefined") {
         return;
     }
-    parseDates(datafetcher.getCurrentObservations(metric), new Date(fragment['startDate']), new Date(fragment['endDate']));
-    buildChart(fromDate, toDate, metric);
+
+    let data;
+    if (serverside) {
+        data = parseDates(datafetcher.getCurrentObservations(metric), new Date(fragment['startDateString']), new Date(fragment['endDateString']));
+    } else {
+        data = parseDates(datafetcher.getCurrentObservations(metric, currAggrMethod, currAggrPeriod), new Date(fragment['startDateString']), new Date(fragment['endDateString']));
+    }
+    buildChart(data, fromDate, toDate, metric);
 }
 
-function buildChart(fromDate, toDate, metric) {
-    let data = datafetcher.getCurrentObservations(metric);
+function buildChart(data, fromDate, toDate, metric) {
     console.log(data);
 
     x.domain(d3.extent([fromDate, toDate]));
