@@ -190,7 +190,7 @@ svg.append("path")
 
 
 function parseDates(data, fromDate, toDate) {
-    console.log(data);
+    // console.log(data);
     data.forEach(function (d) {
         if (d.resultTime[d.resultTime.length - 1] === 'Z') {
             // console.log("[LOG] graphside fromDate: " + fromDate);
@@ -199,7 +199,7 @@ function parseDates(data, fromDate, toDate) {
             let resultDate = new Date(d.resultTime);
             //resultDate = resultDate.setHours(resultDate.getHours() - 1);
 
-            console.log("conversion");
+            // console.log("conversion");
             d.resultTime = parseTime(d.resultTime);
 
         }
@@ -223,10 +223,10 @@ function updateChart(fragment) {
     } else {
         data = parseDates(datafetcher.getCurrentObservations(metric, currAggrMethod, currAggrPeriod), new Date(fragment['startDateString']), new Date(fragment['endDateString']));
     }
-    buildChart(data, fromDate, toDate, metric);
+    buildChart(data, fromDate, toDate);
 }
 
-function buildChart(data, fromDate, toDate, metric) {
+function buildChart(data, fromDate, toDate) {
     console.log(data);
 
     x.domain(d3.extent([fromDate, toDate]));
