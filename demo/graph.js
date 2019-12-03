@@ -37,17 +37,18 @@ function getAirQualityData() {
     const side = document.getElementById('aggregate_side').value;
     serverside = side === "serverside";
 
+    if (! serverside) {
+        fromDate = datafetcher.dateOffsetCorrection(fromDate, aggrPeriod);
+        toDate = datafetcher.dateOffsetCorrection(toDate, aggrPeriod);
+    }
 
     let args = [];
-    if (aggrMethod !== "none") {
+    if (serverside && aggrMethod !== "none") {
         args.push(aggrMethod);
     }
-    if (aggrPeriod !== "none") {
+    if (serverside && aggrPeriod !== "none") {
         args.push(aggrPeriod);
-        if (! serverside) {
-            fromDate = datafetcher.dateOffsetCorrection(fromDate, true, aggrPeriod);
-            toDate = datafetcher.dateOffsetCorrection(toDate, false, aggrPeriod);
-        }
+
     }
     args = [polygon, fromDate, toDate].concat(args);
     currAggrMethod = aggrMethod;
