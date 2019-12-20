@@ -227,7 +227,7 @@ function updateChart(fragment) {
 }
 
 function buildChart(data, fromDate, toDate) {
-    console.log(data);
+    // console.log(data);
 
     x.domain(d3.extent([fromDate, toDate]));
     y.domain([d3.min(data, d => d.hasSimpleResult),
