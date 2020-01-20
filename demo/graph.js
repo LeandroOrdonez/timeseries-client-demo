@@ -51,6 +51,7 @@ function getAirQualityData() {
 
     }
     args = [polygon, fromDate, toDate].concat(args);
+    console.log(polygon);
     currAggrMethod = aggrMethod;
     currAggrPeriod = aggrPeriod;
     datafetcher.addFragmentListener(updateChart);
@@ -79,12 +80,6 @@ map.addLayer(editableLayers);
 var options = {
     position: 'topright',
     draw: {
-        polyline: {
-            shapeOptions: {
-                color: '#f357a1',
-                weight: 10
-            }
-        },
         polygon: {
             allowIntersection: false, // Restricts shapes to simple polygons
             drawError: {
@@ -96,11 +91,10 @@ var options = {
             }
         },
         circle: false, // Turns off this drawing tool
-        rectangle: {
-            shapeOptions: {
-                clickable: false
-            }
-        },
+        rectangle: false,
+        marker: false,
+        polyline: false,
+        circlemarker: false,
     },
     edit: {
         featureGroup: editableLayers, //REQUIRED!!
