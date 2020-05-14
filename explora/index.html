@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<style> /* set the CSS */
+
+.line {
+    fill: none;
+    stroke: steelblue;
+    stroke-width: 2px;
+}
+
+</style>
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.5.1/dist/leaflet.css"
+          integrity="sha512-xwE/Az9zrjBIphAcBb3F6JVqxf46+CDLwfLMHloNu6KEQCAWi6HcDUbeOfBIptF7tcCzusKFjFw2yuvEpDL9wQ=="
+          crossorigin=""/>
+    <script src="https://unpkg.com/leaflet@1.5.1/dist/leaflet.js"
+            integrity="sha512-GffPMF3RvMeYyc1LWMHtK8EbPv0iNZ8/oTtHPx9/cc2ILxQ+u905qIwdpULaqDkyBKgOaB57QTMg7ztg8Jm2Og=="
+            crossorigin=""></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet.draw/1.0.4/leaflet.draw.css"/>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet.draw/1.0.4/leaflet.draw.js"></script>
+    <script src="https://d3js.org/d3.v4.min.js"></script>
+    <script src="bundle.js"></script>
+    <script src="https://cdnjs.com/libraries/moment.js"></script>
+    <link rel="stylesheet" href="../demo/style.css">
+</head>
+<body>
+
+<input type="datetime-local" id="start" value="2020-05-08T20:00">
+<input type="datetime-local" id="end" value="2020-05-08T23:00">
+<select id="metrics">
+    <option value="http://example.org/data/airquality.no2::number">no2</option>
+    <option value="http://example.org/data/airquality.o3::number">o3</option>
+    <option value="http://example.org/data/airquality.pm10::number">pm10</option>
+    <option value="http://example.org/data/airquality.pm25::number">pm25</option>
+</select>
+<select id="aggrMethod">
+    <option value="none">None</option>
+    <option value="median">Median</option>
+    <option value="avg" selected>Average</option>
+</select>
+<select id="aggrPeriod">
+    <option value="none">None</option>
+    <option value="min" selected>Minute</option>
+    <option value="hour">Hour</option>
+    <option value="day">Day</option>
+    <option value="month">Month</option>
+    <option value="year">Year</option>
+</select>
+<select id="aggregate_side">
+    <option value="serverside" selected>Server Side</option>
+    <option value="clientside">Client Side</option>
+
+</select>
+<button type="button" onclick="getAirQualityData()">Get Data!</button>
+<div id="mapid"></div>
+<!-- Create a div where the graph will take place -->
+<div id="my_dataviz"></div>
+
+</body>
+<script src="../demo/graph.js"></script>
+</html>
