@@ -27,8 +27,8 @@
 </head>
 <body>
 
-<input type="datetime-local" id="start" value="2019-11-08T23:00">
-<input type="datetime-local" id="end" value="2019-11-10T01:00">
+<input type="datetime-local" id="start" value="2020-05-08T20:00">
+<input type="datetime-local" id="end" value="2020-05-08T23:00">
 <select id="metrics">
     <option value="http://example.org/data/airquality.no2::number">no2</option>
     <option value="http://example.org/data/airquality.o3::number">o3</option>
@@ -37,13 +37,14 @@
 </select>
 <select id="aggrMethod">
     <option value="none">None</option>
-    <option value="median">Median</option>
-    <option value="average">Average</option>
+    <option value="count">Count</option>
+    <option value="sum">Sum</option>
+    <option value="avg" selected>Average</option>
 </select>
 <select id="aggrPeriod">
     <option value="none">None</option>
     <option value="min">Minute</option>
-    <option value="hour">Hour</option>
+    <option value="hour" selected>Hour</option>
     <option value="day">Day</option>
     <option value="month">Month</option>
     <option value="year">Year</option>
